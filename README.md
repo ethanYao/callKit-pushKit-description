@@ -1,5 +1,5 @@
-#CallKit
-##About CallKit
+# CallKit
+## About CallKit
 CallKit是一个由苹果提供的开发框架，这个框架能够让第三方应用获得系统通话的权限以及体验，在iOS 10发布以来，各大音频移动引用都陆续支持这个功能。以下是这个框架的特性：
 
 	1. 提高VoIP电话的权限，避免通话过程中被系统来电直接打断的情况。
@@ -8,7 +8,7 @@ CallKit是一个由苹果提供的开发框架，这个框架能够让第三方�
 	4. 来电识别，用户可在接听前发现骚扰电话。
 它可以分为三大模块：`VoIP`，`CallCenter`和`来电屏蔽`，而目前我们仅仅需要关注VoIP这一块就可以了。
 
-##CallKit API & Description
+## CallKit API & Description
 ### <a> 主要的类 __CXProvider和CXCallController__ </a>
 > __简介__
 > 
@@ -22,20 +22,20 @@ CallKit是一个由苹果提供的开发框架，这个框架能够让第三方�
 > 7. <mark> __CXCallObserver__ </mark>可以设置一个代理来随时捕获电话信息的更新。
 
 
-####工作原理
-#####先来看一下CallKit的大致流程分工：
+#### 工作原理
+##### 先来看一下CallKit的大致流程分工：
 
 ![CallKit](http://chuantu.biz/t6/34/1504510397x2728278847.png)
 
 <font color=#000000 size=3 face="微软雅黑"> CallKit有两个主要的类 __CXProvider__ 和 __CXCallController__。CXProvider可以将一些外来事件通知给系统，而CXCallController可以让系统收到App的一些Request，用户的action，内部的事件。
 </font>
-####具体描述
+#### 具体描述
 当caller需要唤起一个通话（也就是在app内的操作），需要把用户start的`action`放进去CXTransaction里面，由CXCallController（这个是处理用户在app的操作的控制器）通过这个trasaction载体告诉系统，要打电话了。一旦发起这个请求，那么就会有一个成功或者失败的回调（注意，这里只是对应发起通话的<mark> __请求__ </mark>结果而不是是否接通的结果，后面会用一幅图详细解释），当系统收到这个外来事件后会调用自身的功能，并且会让CXProvider作为他的代理，告诉provider有什么action，其中如果provider想要和系统交互，需要用CXCallUpdate和系统交互的，例如一个来电，某个点触发了来电需要唤起系统的界面，那么需要让provider通过callupdate这个载体告诉系统执行相关事件，系统处理完会有一个回调告诉provider到底完成的怎样！一个完整的拨打&接听的流程就在下图：
 
 
 ![CallKit](http://chuantu.biz/t6/34/1504510342x1022828786.png)
 
-##Use CallKit
+## Use CallKit
 
 <font color=#000000 size=3 face="微软雅黑"> __以下这部分可能比较无聊，也繁琐，但这是使用的技巧__ </font>
 
@@ -114,13 +114,13 @@ CallKit是一个由苹果提供的开发框架，这个框架能够让第三方�
 
 <font color=#000000 size=3 face="微软雅黑">大家就可以根据自己的需要去使用这个代理了，很方便有没有！！</font>
 
-##pushKit
+## pushKit
 callKit配合pushKit使用就是完全模仿来电的效果，在锁屏状态下也会调起callKit，使用也不难：
 
 	1. 在appdelegate的方法里面先进行pushKit的注册，设置好代理，那么在	代理方法就会返回一个token，我们需要把这个token和我们已经生成的voip证	书一起给服务器，由服务器统一支配，把这些资料交给苹果服务器，那么苹果服	务器就会类似于push消息一样通知指定的设备了；
 	2. 苹果服务器一旦把这个push推给指定的设备机会激活pushkit的另一个代理	方法，我们需要在这个代理方法里面去主动呼起系统的来电页面就可以了，另外	后台的这个推送服务也不难，php和java都是可以的，不仅限这两个语言，而且	推送的代码和原理和push消息是非常相似的，可参考push消息。
 
-##Attention
+## Attention
 
 <font color=#000000 size=4 face="黑体">另外iOS10已经警告VoIP功能的应用去使用<a>PushKit</a>来接受来电推送，以往的VoIP后台申请不受支持。</font>
 
@@ -128,5 +128,5 @@ CallKit只是一个调起系统来电的页面，提高VoIP的通话权限，并
 
 无论打电话还是接电话，都必须要先对provider进行预先配置，这个设置配置可以放在APPDelegate里面，只执行一次即可。
 
-##Additional & Diseases
+## Additional & Diseases
 目前暂时存在一个问题，就是在未接通电话话的状态下，caller或者callee主动去挂断，未能通知另一端。暂时是猜想是和服务端的推送有关系。另一个就是UUID的问题，我们已经知道caller这边outgoing是会主动生成一个UUID，但是callee是否需要自动生成，还存在疑惑，官方的的demo是只生成一次的UUID，用pushkit作为传输。造成前一个问题的关键很可能和这个有关。
